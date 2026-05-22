@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IT Helpdesk</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="container header-inner">
+      <div class="brand">
+        <div class="logo">IT</div>
+        <div>
+          <h1>IT Helpdesk</h1>
+          <p class="tagline">Troubleshooting guides & company IT policies</p>
+        </div>
+      </div>
+      <input
+        id="search"
+        type="search"
+        placeholder="Search problems or policies..."
+        autocomplete="off"
+      />
+    </div>
+  </header>
+
+  <nav class="tabs container">
+    <button class="tab active" data-tab="troubleshooting">
+      Troubleshooting
+    </button>
+    <button class="tab" data-tab="policies">IT Policies</button>
+    <button class="tab" data-tab="contact">Contact IT</button>
+  </nav>
+
+  <main class="container">
+    <!-- Troubleshooting -->
+    <section id="troubleshooting" class="panel active">
+      <div class="category-bar" id="categoryBar"></div>
+      <div id="troubleshootingList" class="list"></div>
+      <p id="noResults" class="empty hidden">No matching guides found.</p>
+    </section>
+
+    <!-- Policies -->
+    <section id="policies" class="panel">
+      <div id="policiesList" class="list"></div>
+      <p id="noPolicyResults" class="empty hidden">No matching policies found.</p>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact" class="panel">
+      <div class="contact-grid">
+        <div class="contact-card">
+          <h3>Help Desk</h3>
+          <p class="big">ext. 5000</p>
+          <p>Mon–Fri, 8:00 AM – 6:00 PM</p>
+        </div>
+        <div class="contact-card">
+          <h3>Email Support</h3>
+          <p class="big"><a href="mailto:mumbaiit@bookmyshow.com">mumbaiit@bookmyshow.com</a></p>
+          <p>Response within 4 business hours</p>
+        </div>
+        <div class="contact-card">
+          <h3>Emergency / After Hours</h3>
+          <p class="big"><a href="tel:+919833353796">+91 98333 53 796</a></p>
+          <p>Critical outages only</p>
+        </div>
+        <div class="contact-card">
+          <h3>Submit a Ticket</h3>
+          <p class="big"><a href="#" onclick="alert('This would open your ticketing system.'); return false;">Open ticket portal</a></p>
+          <p>Track requests and SLAs</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer container">
+    <p>&copy; <span id="year"></span> Company IT Department · Last updated May 2026</p>
+  </footer>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
