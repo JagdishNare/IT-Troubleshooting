@@ -169,7 +169,7 @@ const troubleshooting = [
       "Do NOT click links or open attachments.",
       "Do NOT reply, even to ask if it's real.",
       "Use the 'Report Phishing' button in your email client.",
-      "If no button is available, forward the email as an attachment to security@company.com.",
+      "If no button is available, forward the email as an attachment to security@bookmyshow.com.",
       "Delete the email after reporting."
     ],
     tip: "If you already clicked a link or entered credentials, disconnect from the network and call IT immediately. Speed matters."
