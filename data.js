@@ -70,6 +70,24 @@ const troubleshooting = [
     tip: "Never share your password — IT will never ask for it, even during a real support call."
   },
   {
+    id: "ad-password-reset",
+    category: "Accounts",
+    title: "Reset domain / AD password (Self-Service Portal)",
+    symptoms: [
+      "Need to reset your domain (Active Directory) password",
+      "Password expired notification at login",
+      "Want to change your password without calling IT"
+    ],
+    steps: [
+      "Step 1 — Access the Self-Service Portal: Open your web browser and go to https://adss.bigtree.biz, then click 'Reset Password' on the home page.",
+      "Step 2 — Enter your User Information: Enter your Domain User Name in firstName.lastName format, all lowercase (e.g. John Doe → john.doe).",
+      "Enter the captcha security characters shown on screen and click Continue.",
+      "Follow the on-screen prompts to verify your identity (security questions / OTP).",
+      "Set your new password following the password policy (14+ characters, mix of cases, numbers, and symbols)."
+    ],
+    tip: "Bookmark https://adss.bigtree.biz so you can find it quickly next time. If the portal doesn't recognize your username, contact the Help Desk on ext. 5000."
+  },
+  {
     id: "email-not-sending",
     category: "Email",
     title: "Email won't send or receive",
