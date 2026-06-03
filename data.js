@@ -290,7 +290,7 @@ const policies = [
       </ul>
       <h4>How to report</h4>
       <ol>
-        <li>Call the IT helpdesk for anything urgent: ext. 4357.</li>
+        <li>Call the IT helpdesk for anything urgent: ext. 5000.</li>
         <li>For non-urgent incidents, email security@company.com.</li>
         <li>Include: what happened, when, what data/system is affected, and what you've done so far.</li>
       </ol>
