@@ -154,6 +154,123 @@ function setupSearch() {
 
 // ---------- IT Asset Form ----------
 const IT_EMAIL = "mumbaiit@bookmyshow.com";
+const HISTORY_KEY = "itAssetSubmissions";
+const HISTORY_MAX = 50;
+
+function loadHistory() {
+  try {
+    const raw = localStorage.getItem(HISTORY_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveHistory(list) {
+  try {
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(list));
+  } catch (err) {
+    console.warn("Could not save history:", err);
+  }
+}
+
+function formatTimestamp(iso) {
+  try {
+    const d = new Date(iso);
+    return d.toLocaleString(undefined, {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+  } catch {
+    return iso;
+  }
+}
+
+function buildEmailLink(data) {
+  const lines = ["IT Asset Allocation Details", "============================", ""];
+  Object.entries(data).forEach(([k, v]) => {
+    if (k === "submittedAt") return;
+    lines.push(`${k}: ${v}`);
+  });
+  lines.push("", "Submitted from the IT Helpdesk app.");
+  const subject = `IT Asset Allocation - ${data["Employee Name"]} (${data["Employee Code"]})`;
+  return `mailto:${IT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines.join("\n"))}`;
+}
+
+function renderHistory() {
+  const list = loadHistory();
+  const container = document.getElementById("historyList");
+  const empty = document.getElementById("historyEmpty");
+  const countEl = document.getElementById("historyCount");
+  const clearBtn = document.getElementById("clearHistory");
+  if (!container) return;
+
+  countEl.textContent = list.length;
+  clearBtn.style.display = list.length ? "" : "none";
+  empty.classList.toggle("hidden", list.length > 0);
+
+  container.innerHTML = list
+    .map((entry, idx) => {
+      const accLine = entry["Accessories"] && entry["Accessories"] !== "None"
+        ? ` · ${escapeHTML(entry["Accessories"])}`
+        : "";
+      const subParts = [
+        entry["Asset Tag Number"] ? `Tag ${escapeHTML(entry["Asset Tag Number"])}` : "",
+        entry["Location"] ? escapeHTML(entry["Location"]) : ""
+      ].filter(Boolean).join(" · ");
+
+      return `
+        <article class="history-item" data-idx="${idx}">
+          <div class="history-item-head">
+            <div class="history-main">
+              <div class="history-name">${escapeHTML(entry["Employee Name"] || "Unnamed")} <span style="color: var(--muted); font-weight: 400;">· ${escapeHTML(entry["Employee Code"] || "")}</span></div>
+              <div class="history-sub">${subParts}${accLine}</div>
+            </div>
+            <div class="history-time">${formatTimestamp(entry.submittedAt)}</div>
+            <div class="history-actions">
+              <button type="button" class="icon-btn" data-action="delete" data-idx="${idx}" title="Delete entry">✕</button>
+            </div>
+          </div>
+          <div class="history-body">
+            <dl>
+              ${Object.entries(entry)
+                .filter(([k]) => k !== "submittedAt")
+                .map(([k, v]) => `<dt>${escapeHTML(k)}</dt><dd>${escapeHTML(String(v))}</dd>`)
+                .join("")}
+            </dl>
+            <a class="resend" href="${buildEmailLink(entry)}">↗ Reopen email draft</a>
+          </div>
+        </article>`;
+    })
+    .join("");
+
+  // Expand / collapse on header click
+  container.querySelectorAll(".history-item-head").forEach((h) => {
+    h.addEventListener("click", (e) => {
+      if (e.target.closest(".icon-btn")) return;
+      h.parentElement.classList.toggle("open");
+    });
+  });
+
+  // Delete handlers
+  container.querySelectorAll('[data-action="delete"]').forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const idx = Number(btn.dataset.idx);
+      const current = loadHistory();
+      const entry = current[idx];
+      const label = entry ? `${entry["Employee Name"]} (${entry["Employee Code"]})` : "this entry";
+      if (confirm(`Delete submission for ${label}?`)) {
+        current.splice(idx, 1);
+        saveHistory(current);
+        renderHistory();
+      }
+    });
+  });
+}
 
 function setupAssetForm() {
   const form = document.getElementById("assetAllocationForm");
@@ -183,23 +300,20 @@ function setupAssetForm() {
     const notes = (fd.get("notes") || "").trim();
     if (notes) data["Notes"] = notes;
 
-    // Build email body
-    const lines = ["IT Asset Allocation Details", "============================", ""];
-    Object.entries(data).forEach(([k, v]) => lines.push(`${k}: ${v}`));
-    lines.push("", "Submitted from the IT Helpdesk app.");
+    // Save to local history (most-recent first, capped)
+    const history = loadHistory();
+    history.unshift({ ...data, submittedAt: new Date().toISOString() });
+    saveHistory(history.slice(0, HISTORY_MAX));
+    renderHistory();
 
-    const subject = `IT Asset Allocation - ${data["Employee Name"]} (${data["Employee Code"]})`;
-    const body = lines.join("\n");
-    const mailto = `mailto:${IT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-
-    // Open mail client
-    window.location.href = mailto;
+    // Open mail client with pre-filled draft
+    window.location.href = buildEmailLink(data);
 
     // Show feedback
     status.classList.remove("hidden", "error");
     status.classList.add("success");
     status.innerHTML =
-      `Email draft opened to <strong>${IT_EMAIL}</strong> with the asset details. ` +
+      `Saved locally and email draft opened to <strong>${IT_EMAIL}</strong>. ` +
       `Send it from your mail client to complete submission.`;
   });
 
@@ -207,6 +321,19 @@ function setupAssetForm() {
     status.classList.add("hidden");
     status.classList.remove("success", "error");
   });
+
+  // Clear-all button
+  const clearBtn = document.getElementById("clearHistory");
+  if (clearBtn) {
+    clearBtn.addEventListener("click", () => {
+      if (confirm("Clear all locally saved asset submissions? This cannot be undone.")) {
+        saveHistory([]);
+        renderHistory();
+      }
+    });
+  }
+
+  renderHistory();
 }
 
 // ---------- Init ----------

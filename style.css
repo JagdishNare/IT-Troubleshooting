@@ -534,6 +534,155 @@ body {
   color: #8e2a1e;
 }
 
+/* Submission history */
+.history-card {
+  margin-top: 18px;
+}
+
+.history-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.count-pill {
+  display: inline-block;
+  background: var(--accent);
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+  margin-left: 6px;
+  vertical-align: 2px;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.history-item {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #fafbfd;
+  overflow: hidden;
+}
+
+.history-item-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.history-item-head:hover {
+  background: var(--accent);
+}
+
+.history-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.history-name {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.history-sub {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.history-time {
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.history-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.icon-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.icon-btn:hover {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.history-body {
+  padding: 0 14px 14px;
+  font-size: 13px;
+  display: none;
+  border-top: 1px solid var(--border);
+  background: #fff;
+}
+
+.history-item.open .history-body {
+  display: block;
+  padding-top: 12px;
+}
+
+.history-body dl {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 4px 12px;
+  margin: 0;
+}
+
+.history-body dt {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.history-body dd {
+  margin: 0;
+  color: var(--text);
+  word-break: break-word;
+}
+
+.history-body .resend {
+  margin-top: 12px;
+  display: inline-block;
+  font-size: 13px;
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.history-body .resend:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+  .history-body dl {
+    grid-template-columns: 1fr;
+  }
+  .history-body dt {
+    margin-top: 6px;
+  }
+}
+
 /* Empty */
 .empty {
   text-align: center;
