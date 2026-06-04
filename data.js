@@ -291,7 +291,7 @@ const policies = [
       <h4>How to report</h4>
       <ol>
         <li>Call the IT helpdesk for anything urgent: ext. 5000.</li>
-        <li>For non-urgent incidents, email security@company.com.</li>
+        <li>For non-urgent incidents, email mumbaiit.com.</li>
         <li>Include: what happened, when, what data/system is affected, and what you've done so far.</li>
       </ol>
       <p class="tip"><strong>No-blame rule:</strong> Reporting a mistake quickly is always treated more favorably than hiding it.</p>
