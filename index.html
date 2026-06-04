@@ -31,6 +31,7 @@
       Troubleshooting
     </button>
     <button class="tab" data-tab="policies">IT Policies</button>
+    <button class="tab" data-tab="assetForm">IT Asset Form</button>
     <button class="tab" data-tab="contact">Contact IT</button>
   </nav>
 
@@ -46,6 +47,91 @@
     <section id="policies" class="panel">
       <div id="policiesList" class="list"></div>
       <p id="noPolicyResults" class="empty hidden">No matching policies found.</p>
+    </section>
+
+    <!-- IT Asset Form -->
+    <section id="assetForm" class="panel">
+      <div class="form-card">
+        <header class="form-head">
+          <h2>IT Asset Allocation</h2>
+          <p>Record the IT assets assigned to an employee. On submit, an
+            email draft opens addressed to the IT team with all details filled in.</p>
+        </header>
+
+        <form id="assetAllocationForm" class="asset-form" autocomplete="off">
+          <div class="form-grid">
+            <label class="field">
+              <span>Employee Name <em>*</em></span>
+              <input type="text" name="employeeName" required placeholder="e.g. Priya Sharma" />
+            </label>
+
+            <label class="field">
+              <span>Employee Code <em>*</em></span>
+              <input type="text" name="employeeCode" required placeholder="e.g. BMS12345" />
+            </label>
+
+            <label class="field">
+              <span>Asset Tag Number <em>*</em></span>
+              <input type="text" name="tagNumber" required placeholder="e.g. BMS-LT-0421" />
+            </label>
+
+            <label class="field">
+              <span>Serial Number <em>*</em></span>
+              <input type="text" name="serialNumber" required placeholder="Device serial / service tag" />
+            </label>
+
+            <label class="field">
+              <span>Location <em>*</em></span>
+              <select name="location" required>
+                <option value="">Select location…</option>
+                <option>Mumbai - HO</option>
+                <option>Mumbai - Andheri</option>
+                <option>Bengaluru</option>
+                <option>Delhi NCR</option>
+                <option>Hyderabad</option>
+                <option>Chennai</option>
+                <option>Pune</option>
+                <option>Remote / WFH</option>
+                <option>Other</option>
+              </select>
+            </label>
+
+            <label class="field">
+              <span>Reporting Manager <em>*</em></span>
+              <input type="text" name="manager" required placeholder="Manager full name" />
+            </label>
+          </div>
+
+          <fieldset class="field accessories">
+            <legend>Accessories issued</legend>
+            <div class="checks">
+              <label><input type="checkbox" name="accessories" value="Mouse" /> Mouse</label>
+              <label><input type="checkbox" name="accessories" value="Keyboard" /> Keyboard</label>
+              <label><input type="checkbox" name="accessories" value="Headset" /> Headset</label>
+              <label><input type="checkbox" name="accessories" value="Charger / Power Adapter" /> Charger</label>
+              <label><input type="checkbox" name="accessories" value="Laptop Bag" /> Laptop bag</label>
+              <label><input type="checkbox" name="accessories" value="Docking Station" /> Docking station</label>
+              <label><input type="checkbox" name="accessories" value="External Monitor" /> External monitor</label>
+              <label><input type="checkbox" name="accessories" value="Webcam" /> Webcam</label>
+              <label><input type="checkbox" name="accessories" value="USB Hub" /> USB hub</label>
+              <label><input type="checkbox" name="accessories" value="HDMI / Display Cable" /> HDMI / display cable</label>
+            </div>
+            <input type="text" name="accessoriesOther" placeholder="Other accessories (comma separated)" class="other-input" />
+          </fieldset>
+
+          <label class="field">
+            <span>Notes / Remarks</span>
+            <textarea name="notes" rows="3" placeholder="Anything else IT should know (e.g. condition, replacement reason)"></textarea>
+          </label>
+
+          <div class="form-actions">
+            <button type="submit" class="btn primary">Submit (email to IT)</button>
+            <button type="reset" class="btn ghost">Reset form</button>
+          </div>
+
+          <p id="formStatus" class="form-status hidden"></p>
+        </form>
+      </div>
     </section>
 
     <!-- Contact -->

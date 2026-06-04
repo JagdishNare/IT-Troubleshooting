@@ -152,6 +152,63 @@ function setupSearch() {
   });
 }
 
+// ---------- IT Asset Form ----------
+const IT_EMAIL = "mumbaiit@bookmyshow.com";
+
+function setupAssetForm() {
+  const form = document.getElementById("assetAllocationForm");
+  if (!form) return;
+  const status = document.getElementById("formStatus");
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const fd = new FormData(form);
+
+    const data = {
+      "Employee Name": (fd.get("employeeName") || "").trim(),
+      "Employee Code": (fd.get("employeeCode") || "").trim(),
+      "Asset Tag Number": (fd.get("tagNumber") || "").trim(),
+      "Serial Number": (fd.get("serialNumber") || "").trim(),
+      "Location": (fd.get("location") || "").trim(),
+      "Reporting Manager": (fd.get("manager") || "").trim()
+    };
+
+    const accessories = fd.getAll("accessories");
+    const other = (fd.get("accessoriesOther") || "").trim();
+    if (other) {
+      other.split(",").map((s) => s.trim()).filter(Boolean).forEach((s) => accessories.push(s));
+    }
+    data["Accessories"] = accessories.length ? accessories.join(", ") : "None";
+
+    const notes = (fd.get("notes") || "").trim();
+    if (notes) data["Notes"] = notes;
+
+    // Build email body
+    const lines = ["IT Asset Allocation Details", "============================", ""];
+    Object.entries(data).forEach(([k, v]) => lines.push(`${k}: ${v}`));
+    lines.push("", "Submitted from the IT Helpdesk app.");
+
+    const subject = `IT Asset Allocation - ${data["Employee Name"]} (${data["Employee Code"]})`;
+    const body = lines.join("\n");
+    const mailto = `mailto:${IT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+    // Open mail client
+    window.location.href = mailto;
+
+    // Show feedback
+    status.classList.remove("hidden", "error");
+    status.classList.add("success");
+    status.innerHTML =
+      `Email draft opened to <strong>${IT_EMAIL}</strong> with the asset details. ` +
+      `Send it from your mail client to complete submission.`;
+  });
+
+  form.addEventListener("reset", () => {
+    status.classList.add("hidden");
+    status.classList.remove("success", "error");
+  });
+}
+
 // ---------- Init ----------
 function init() {
   $("#year").textContent = new Date().getFullYear();
@@ -160,6 +217,7 @@ function init() {
   renderCategories();
   renderTroubleshooting();
   renderPolicies();
+  setupAssetForm();
 }
 
 document.addEventListener("DOMContentLoaded", init);
