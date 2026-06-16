@@ -36,6 +36,27 @@ const troubleshooting = [
     tip: "Avoid running personal VPNs and the corporate VPN at the same time — they conflict."
   },
   {
+    id: "chrome-tls-quic",
+    category: "Network",
+    title: "Chrome: pages slow or fail to load (TLS 1.3 Early Data & QUIC)",
+    symptoms: [
+      "Pages keep loading endlessly or time out in Chrome",
+      "Sites work in another browser but not Chrome",
+      "ERR_TIMED_OUT / ERR_CONNECTION_CLOSED / ERR_QUIC_PROTOCOL_ERROR",
+      "First-load is fast but subsequent loads stall"
+    ],
+    steps: [
+      "Open a new tab and go to chrome://flags",
+      "In the search box at the top, type: tls13-early-data",
+      "Find 'TLS 1.3 Early Data' and set it to Enabled from the dropdown.",
+      "Clear the search box and type: quic",
+      "Find 'Experimental QUIC protocol' and set it to Enabled from the dropdown.",
+      "Click the blue 'Relaunch' button at the bottom of the page — Chrome will restart and keep your tabs.",
+      "After relaunch, reload the page that was failing and check if it loads cleanly."
+    ],
+    tip: "If pages get WORSE after enabling these (rare, usually on strict corporate firewalls), go back to chrome://flags and switch one or both to 'Disabled', then Relaunch. Reset all flags with the 'Reset all' button in the top-right of chrome://flags if you want to start fresh."
+  },
+  {
     id: "slow-computer",
     category: "Performance",
     title: "Computer is running slow",
