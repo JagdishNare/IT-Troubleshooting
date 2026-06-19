@@ -303,6 +303,17 @@ body {
   color: var(--warning);
 }
 
+/* Inline links inside troubleshooting steps, symptoms and tips */
+.item-body a {
+  color: var(--primary);
+  text-decoration: underline;
+  word-break: break-word;
+}
+
+.item-body a:hover {
+  color: var(--primary-dark);
+}
+
 /* Contact */
 .contact-grid {
   display: grid;

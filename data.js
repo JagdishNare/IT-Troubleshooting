@@ -84,11 +84,12 @@ const troubleshooting = [
     ],
     steps: [
       "Wait 15 minutes — most lockouts clear automatically.",
-      "Use the self-service password reset portal (sso.company.com/reset).",
+      "Use the self-service password reset portal: https://adss.bigtree.biz",
+      "On the portal home page, click 'Reset Password' and follow the prompts.",
       "Have your MFA device (phone) ready before starting.",
       "If you no longer have access to your MFA device, contact IT in person with photo ID."
     ],
-    tip: "Never share your password — IT will never ask for it, even during a real support call."
+    tip: "Bookmark https://adss.bigtree.biz so you can find it the next time. Never share your password — IT will never ask for it, even during a real support call."
   },
   {
     id: "ad-password-reset",
