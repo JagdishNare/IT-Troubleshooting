@@ -15,11 +15,39 @@ function escapeHTML(str) {
     .replace(/'/g, "&#39;");
 }
 
+// Strip trailing punctuation that shouldn't be part of the URL
+function splitTrailingPunct(url) {
+  const m = url.match(/^(.*?)([.,;:!?)\]]+)$/);
+  return m ? [m[1], m[2]] : [url, ""];
+}
+
 function highlight(text, term) {
-  if (!term) return escapeHTML(text);
-  const safe = escapeHTML(text);
-  const re = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "ig");
-  return safe.replace(re, "<mark>$1</mark>");
+  // 1. Escape HTML
+  let safe = escapeHTML(text);
+
+  // 2. Extract URLs to placeholders so the highlight regex can't corrupt them
+  const links = [];
+  safe = safe.replace(/(https?:\/\/[^\s<]+)/g, (match) => {
+    const [url, trail] = splitTrailingPunct(match);
+    links.push(url);
+    return `${links.length - 1}${trail}`;
+  });
+
+  // 3. Apply highlight on the URL-free text
+  const buildRe = () =>
+    new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "ig");
+  if (term) {
+    safe = safe.replace(buildRe(), "<mark>$1</mark>");
+  }
+
+  // 4. Re-insert URLs as anchor tags, with highlight applied to the visible text only
+  safe = safe.replace(/(\d+)/g, (_, idx) => {
+    const url = links[Number(idx)];
+    const visible = term ? url.replace(buildRe(), "<mark>$1</mark>") : url;
+    return `<a href="${url}" target="_blank" rel="noopener noreferrer">${visible}</a>`;
+  });
+
+  return safe;
 }
 
 function matches(item, term) {
