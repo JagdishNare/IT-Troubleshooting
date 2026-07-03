@@ -110,7 +110,7 @@ function renderTroubleshooting() {
   list.innerHTML = filtered
     .map(
       (t) => `
-      <article class="item" data-id="${t.id}">
+      <article class="item" data-id="${t.id}" data-category="${escapeHTML(t.category)}">
         <div class="item-header">
           <span class="item-title">${highlight(t.title, searchTerm)}</span>
           <span class="item-meta">${escapeHTML(t.category)}</span>
@@ -237,6 +237,58 @@ function setupAssetForm() {
   });
 }
 
+// ---------- Theme toggle (dark mode) ----------
+const THEME_KEY = "itHelpdeskTheme";
+
+function setupThemeToggle() {
+  const toggle = document.getElementById("themeToggle");
+  if (!toggle) return;
+  const icon = toggle.querySelector(".theme-icon");
+
+  function apply(theme) {
+    if (theme === "dark") {
+      document.documentElement.setAttribute("data-theme", "dark");
+      if (icon) icon.textContent = "☀️";
+    } else {
+      document.documentElement.removeAttribute("data-theme");
+      if (icon) icon.textContent = "🌙";
+    }
+  }
+
+  let saved = null;
+  try {
+    saved = localStorage.getItem(THEME_KEY);
+  } catch {
+    /* localStorage unavailable — default to light */
+  }
+  apply(saved === "dark" ? "dark" : "light");
+
+  toggle.addEventListener("click", () => {
+    const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+    const next = isDark ? "light" : "dark";
+    apply(next);
+    try {
+      localStorage.setItem(THEME_KEY, next);
+    } catch {
+      /* ignore persistence failure */
+    }
+  });
+}
+
+// ---------- Back to top ----------
+function setupBackToTop() {
+  const btn = document.getElementById("backToTop");
+  if (!btn) return;
+
+  window.addEventListener("scroll", () => {
+    btn.classList.toggle("visible", window.scrollY > 400);
+  });
+
+  btn.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+}
+
 // ---------- Init ----------
 function init() {
   $("#year").textContent = new Date().getFullYear();
@@ -246,6 +298,8 @@ function init() {
   renderTroubleshooting();
   renderPolicies();
   setupAssetForm();
+  setupThemeToggle();
+  setupBackToTop();
 }
 
 document.addEventListener("DOMContentLoaded", init);
