@@ -4,10 +4,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>IT Helpdesk</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%9B%A0%EF%B8%8F%3C/text%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header class="header">
+    <div class="blob blob-1" aria-hidden="true"></div>
+    <div class="blob blob-2" aria-hidden="true"></div>
+    <div class="blob blob-3" aria-hidden="true"></div>
     <div class="container header-inner">
       <div class="brand">
         <div class="logo">IT</div>
@@ -17,22 +24,33 @@
           <p class="hours-badge"><span class="dot"></span>IT Working Hours: 10:00 AM – 7:00 PM</p>
         </div>
       </div>
-      <input
-        id="search"
-        type="search"
-        placeholder="Search problems or policies..."
-        autocomplete="off"
-      />
+      <div class="header-actions">
+        <input
+          id="search"
+          type="search"
+          placeholder="Search problems or policies..."
+          autocomplete="off"
+        />
+        <button id="themeToggle" class="theme-toggle" type="button" title="Toggle dark mode" aria-label="Toggle dark mode">
+          <span class="theme-icon">🌙</span>
+        </button>
+      </div>
     </div>
   </header>
 
   <nav class="tabs container">
     <button class="tab active" data-tab="troubleshooting">
-      Troubleshooting
+      <span class="tab-icon">🛠️</span> Troubleshooting
     </button>
-    <button class="tab" data-tab="policies">IT Policies</button>
-    <button class="tab" data-tab="assetForm">IT Asset Form</button>
-    <button class="tab" data-tab="contact">Contact IT</button>
+    <button class="tab" data-tab="policies">
+      <span class="tab-icon">📋</span> IT Policies
+    </button>
+    <button class="tab" data-tab="assetForm">
+      <span class="tab-icon">🗂️</span> IT Asset Form
+    </button>
+    <button class="tab" data-tab="contact">
+      <span class="tab-icon">☎️</span> Contact IT
+    </button>
   </nav>
 
   <main class="container">
@@ -53,7 +71,7 @@
     <section id="assetForm" class="panel">
       <div class="form-card">
         <header class="form-head">
-          <h2>IT Asset Allocation</h2>
+          <h2><span class="head-icon">🗂️</span> IT Asset Allocation</h2>
           <p>Record the IT assets assigned to an employee. On submit, an
             email draft opens addressed to the IT team with all details filled in.</p>
         </header>
@@ -138,21 +156,25 @@
     <section id="contact" class="panel">
       <div class="contact-grid">
         <div class="contact-card">
+          <div class="icon-badge">📞</div>
           <h3>Help Desk</h3>
           <p class="big">ext. 5000</p>
           <p>Mon–Fri, 10:00 AM – 7:00 PM</p>
         </div>
         <div class="contact-card">
+          <div class="icon-badge">📧</div>
           <h3>Email Support</h3>
           <p class="big"><a href="mailto:mumbaiit@bookmyshow.com">mumbaiit@bookmyshow.com</a></p>
           <p class="big"><a href="mailto:netops@bookmyshow.com">netops@bookmyshow.com</a></p>
           <p>Response within 4 business hours</p>
         </div>
         <div class="contact-card">
+          <div class="icon-badge">🚨</div>
           <h3>Emergency / After Hours</h3>
           <p>Critical outages only</p>
         </div>
         <div class="contact-card">
+          <div class="icon-badge">🎫</div>
           <h3>Submit a Ticket</h3>
           <p class="big"><a href="https://jira.bms.bz" target="_blank" rel="noopener noreferrer">jira.bms.bz</a></p>
           <p>Track requests and SLAs</p>
@@ -164,6 +186,8 @@
   <footer class="footer container">
     <p>&copy; <span id="year"></span> Company IT Department · Last updated May 2026</p>
   </footer>
+
+  <button id="backToTop" class="back-to-top" type="button" title="Back to top" aria-label="Back to top">↑</button>
 
   <script src="data.js"></script>
   <script src="app.js"></script>
