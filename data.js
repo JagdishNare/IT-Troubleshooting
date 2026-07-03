@@ -179,6 +179,32 @@ const troubleshooting = [
     tip: "Installing unapproved software is a policy violation, even if it 'just helps you do your job faster'. Request it properly."
   },
   {
+    id: "sophos-fulldisk-access",
+    category: "Software",
+    title: "Sophos: red status / Full Disk Access warning (macOS)",
+    symptoms: [
+      "Sophos Endpoint shows a red status symbol on the menu bar or console",
+      "Sophos Anti-Virus is not running",
+      "'View details' in Sophos lists one or more services as stopped",
+      "macOS keeps prompting that Sophos needs Full Disk Access"
+    ],
+    steps: [
+      "Open the Sophos Endpoint app on your Mac.",
+      "Click 'View details' to see which Sophos services are not running.",
+      "Open System Preferences (System Settings on macOS Ventura and newer).",
+      "Select 'Privacy & Security' from the left pane.",
+      "In the right pane, open 'Full Disk Access' and make sure every Sophos entry in the list is toggled ON.",
+      "If a Sophos service is missing or greyed out, unlock the pane (click the lock and enter your Mac password), then click the '+' icon to add it.",
+      "In the file picker, navigate to Macintosh HD → Library.",
+      "Open the 'Sophos Antivirus' folder.",
+      "Select each service in this folder and add it. If macOS prompts 'Re-open' after adding, click it so the service restarts with the new permission.",
+      "Inside Sophos, also open the 'Tools' folder and add the 'Sophos Diagnostic Utility'.",
+      "Return to the Sophos console → Status → About → Update, and let the update finish.",
+      "Back on the Status screen, confirm Sophos AV is green and running."
+    ],
+    tip: "You'll need to unlock Privacy & Security with your macOS admin password before you can toggle or add Sophos entries. If services keep disappearing from Full Disk Access after every restart, log a ticket — that usually means the Sophos client needs a clean reinstall by IT."
+  },
+  {
     id: "phishing",
     category: "Security",
     title: "Suspicious email / possible phishing",
