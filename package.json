@@ -1,0 +1,31 @@
+{
+  "name": "it-helpdesk",
+  "version": "1.0.0",
+  "description": "Simple static IT troubleshooting and IT policies app for BookMyShow employees.",
+  "private": true,
+  "main": "app.js",
+  "scripts": {
+    "start": "npx --yes serve .",
+    "test": "echo \"No tests configured\" && exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JagdishNare/IT-Troubleshooting.git"
+  },
+  "keywords": [
+    "it",
+    "helpdesk",
+    "troubleshooting",
+    "policies",
+    "bookmyshow"
+  ],
+  "author": "BookMyShow IT",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/JagdishNare/IT-Troubleshooting/issues"
+  },
+  "homepage": "https://github.com/JagdishNare/IT-Troubleshooting#readme",
+  "dependencies": {
+    "@vercel/speed-insights": "^2.0.0"
+  }
+}
