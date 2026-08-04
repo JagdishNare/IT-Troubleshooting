@@ -237,6 +237,237 @@ function setupAssetForm() {
   });
 }
 
+// ---------- Smart Symptom Matcher ----------
+// A lightweight, fully client-side keyword scorer — no external AI service,
+// no data leaves the browser. Weighted term overlap + a small synonym map
+// for common IT phrasing, so "wifi wont connect" still matches
+// "Wi-Fi not connecting".
+const AI_STOPWORDS = new Set([
+  "a", "an", "the", "is", "are", "was", "were", "be", "been", "being",
+  "i", "my", "me", "mine", "it", "its", "this", "that", "these", "those",
+  "to", "of", "in", "on", "at", "for", "with", "and", "or", "but", "so",
+  "if", "then", "than", "as", "by", "from", "up", "down", "out",
+  "am", "do", "does", "did", "have", "has", "had", "will", "would",
+  "can", "could", "should", "get", "getting", "got",
+  "please", "hey", "hi", "hello", "im", "ive"
+]);
+
+const AI_SYNONYMS = {
+  wifi: "wi-fi",
+  pc: "computer",
+  laptop: "computer",
+  notebook: "computer",
+  macbook: "computer",
+  mail: "email",
+  "e-mail": "email",
+  outlook: "email",
+  gmail: "email",
+  monitor: "display",
+  screen: "display",
+  print: "printer",
+  printing: "printer",
+  printers: "printer",
+  internet: "network",
+  connection: "network",
+  connectivity: "network",
+  sluggish: "slow",
+  lag: "slow",
+  lagging: "slow",
+  laggy: "slow",
+  freeze: "slow",
+  freezing: "slow",
+  frozen: "slow",
+  hang: "slow",
+  hanging: "slow",
+  pwd: "password",
+  lockout: "locked",
+  login: "password",
+  signin: "password",
+  malware: "phishing",
+  virus: "phishing",
+  suspicious: "phishing",
+  scam: "phishing",
+  spam: "phishing",
+  stolen: "lost",
+  missing: "lost",
+  app: "software",
+  application: "software",
+  install: "software",
+  browser: "chrome",
+  antivirus: "sophos",
+  av: "sophos"
+};
+
+// Very light stemmer so "connect" / "connecting" / "connected" line up
+function aiStem(word) {
+  if (word.length > 5 && word.endsWith("ing")) return word.slice(0, -3);
+  if (word.length > 4 && word.endsWith("ed")) return word.slice(0, -2);
+  if (word.length > 4 && word.endsWith("es")) return word.slice(0, -2);
+  if (word.length > 4 && word.endsWith("s") && !word.endsWith("ss")) return word.slice(0, -1);
+  return word;
+}
+
+function aiTokenize(text) {
+  return text
+    .toLowerCase()
+    .replace(/'/g, "") // normalize contractions: won't -> wont, can't -> cant (both sides of the match)
+    .replace(/[^a-z0-9\s-]/g, " ")
+    .split(/\s+/)
+    .map((w) => w.replace(/^-+|-+$/g, ""))
+    .filter(Boolean)
+    .filter((w) => !AI_STOPWORDS.has(w))
+    .map((w) => AI_SYNONYMS[w] || w)
+    .map(aiStem);
+}
+
+function aiScoreEntry(tokens, entry) {
+  if (!tokens.length) return 0;
+
+  const fields = [
+    { text: entry.title, weight: 4 },
+    { text: entry.category, weight: 2 },
+    { text: entry.symptoms.join(" "), weight: 3 },
+    { text: entry.steps.join(" "), weight: 1 },
+    { text: entry.tip || "", weight: 1 }
+  ];
+
+  let score = 0;
+  const matchedTokens = new Set();
+
+  fields.forEach(({ text, weight }) => {
+    const fieldTokens = new Set(aiTokenize(text));
+    tokens.forEach((t) => {
+      if (fieldTokens.has(t)) {
+        score += weight;
+        matchedTokens.add(t);
+      }
+    });
+  });
+
+  // Reward covering more of the user's distinct words, not just raw hits
+  const coverage = matchedTokens.size / tokens.length;
+  return score * (0.5 + 0.5 * coverage);
+}
+
+function aiRankMatches(query) {
+  const tokens = aiTokenize(query);
+  if (!tokens.length) return [];
+
+  const scored = troubleshooting
+    .map((entry) => ({ entry, raw: aiScoreEntry(tokens, entry) }))
+    .filter((s) => s.raw > 0);
+
+  if (!scored.length) return [];
+
+  const topRaw = Math.max(...scored.map((s) => s.raw));
+  if (topRaw < 2.5) return []; // too weak to be a useful suggestion
+
+  return scored
+    .map((s) => ({ entry: s.entry, raw: s.raw, score: Math.min(97, Math.round((s.raw / topRaw) * 97)) }))
+    .sort((a, b) => b.score - a.score)
+    // Always keep the top hit. Runners-up need both a decent relative
+    // score AND a real absolute signal (raw >= 4 ~ one full-weight hit)
+    // so a strong top match doesn't drag along a barely-related guide.
+    .filter((s, i) => i === 0 || (s.score >= 30 && s.raw >= 4))
+    .slice(0, 4)
+    .map(({ entry, score }) => ({ entry, score }));
+}
+
+function renderAiResults(query) {
+  const box = document.getElementById("aiResults");
+  if (!box) return;
+
+  const trimmed = query.trim();
+  if (!trimmed) {
+    box.classList.add("hidden");
+    box.innerHTML = "";
+    return;
+  }
+
+  const matches = aiRankMatches(trimmed);
+  box.classList.remove("hidden");
+
+  if (!matches.length) {
+    box.innerHTML = `
+      <div class="ai-no-match">
+        <p>No close match found for "<strong>${escapeHTML(trimmed)}</strong>".</p>
+        <p>Try different words, browse the guides below, or <a href="#" class="ai-goto-contact">contact IT</a> / <a href="https://jira.bms.bz" target="_blank" rel="noopener noreferrer">submit a ticket</a>.</p>
+      </div>`;
+  } else {
+    box.innerHTML = `
+      <p class="ai-results-label">${matches.length} possible match${matches.length > 1 ? "es" : ""}</p>
+      ${matches
+        .map(
+          ({ entry: t, score }, idx) => `
+        <article class="item ai-match ${idx === 0 ? "open" : ""}" data-id="${t.id}" data-category="${escapeHTML(t.category)}">
+          <div class="item-header">
+            <span class="match-score" title="Relevance score">${score}%</span>
+            <span class="item-title">${escapeHTML(t.title)}</span>
+            <span class="item-meta">${escapeHTML(t.category)}</span>
+            <span class="chevron">▶</span>
+          </div>
+          <div class="item-body">
+            <h4>Symptoms</h4>
+            <ul>${t.symptoms.map((s) => `<li>${highlight(s, "")}</li>`).join("")}</ul>
+            <h4>Steps to try</h4>
+            <ol>${t.steps.map((s) => `<li>${highlight(s, "")}</li>`).join("")}</ol>
+            ${t.tip ? `<div class="tip"><strong>Tip:</strong> ${highlight(t.tip, "")}</div>` : ""}
+          </div>
+        </article>`
+        )
+        .join("")}
+      <p class="ai-fallback-note">Didn't find it? <a href="https://jira.bms.bz" target="_blank" rel="noopener noreferrer">Submit a ticket</a> or check the full list below.</p>
+    `;
+  }
+
+  box.querySelectorAll(".item-header").forEach((h) => {
+    h.addEventListener("click", () => h.parentElement.classList.toggle("open"));
+  });
+
+  box.querySelectorAll(".ai-goto-contact").forEach((a) => {
+    a.addEventListener("click", (e) => {
+      e.preventDefault();
+      const contactTab = document.querySelector('.tab[data-tab="contact"]');
+      if (contactTab) contactTab.click();
+    });
+  });
+}
+
+function setupAiAssistant() {
+  const input = document.getElementById("aiInput");
+  const submitBtn = document.getElementById("aiSubmit");
+  if (!input || !submitBtn) return;
+
+  let debounceTimer = null;
+  const run = () => renderAiResults(input.value);
+
+  input.addEventListener("input", () => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(run, 300);
+  });
+
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      clearTimeout(debounceTimer);
+      run();
+    }
+  });
+
+  submitBtn.addEventListener("click", () => {
+    clearTimeout(debounceTimer);
+    run();
+  });
+
+  document.querySelectorAll(".ai-example-chip").forEach((chip) => {
+    chip.addEventListener("click", () => {
+      input.value = chip.dataset.example;
+      run();
+      input.focus();
+    });
+  });
+}
+
 // ---------- Theme toggle (dark mode) ----------
 const THEME_KEY = "itHelpdeskTheme";
 
@@ -300,6 +531,7 @@ function init() {
   setupAssetForm();
   setupThemeToggle();
   setupBackToTop();
+  setupAiAssistant();
 }
 
 document.addEventListener("DOMContentLoaded", init);

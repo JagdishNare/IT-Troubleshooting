@@ -56,6 +56,25 @@
   <main class="container">
     <!-- Troubleshooting -->
     <section id="troubleshooting" class="panel active">
+      <div class="ai-assistant" id="aiAssistant">
+        <div class="ai-assistant-head">
+          <h2><span class="ai-icon">✨</span> Smart Symptom Matcher</h2>
+          <p>Describe your problem in your own words and we'll rank the closest matching guides. Runs entirely in your browser — nothing is sent anywhere.</p>
+        </div>
+        <div class="ai-input-row">
+          <textarea id="aiInput" rows="2" placeholder="e.g. my laptop won't connect to wifi at home"></textarea>
+          <button type="button" id="aiSubmit" class="btn primary">Find my fix</button>
+        </div>
+        <div class="ai-examples">
+          <span>Try:</span>
+          <button type="button" class="ai-example-chip" data-example="wifi won't connect at home">wifi won't connect</button>
+          <button type="button" class="ai-example-chip" data-example="my laptop is really slow">laptop is slow</button>
+          <button type="button" class="ai-example-chip" data-example="forgot my password and I'm locked out">forgot password</button>
+          <button type="button" class="ai-example-chip" data-example="chrome keeps freezing and pages wont load">chrome freezing</button>
+        </div>
+        <div id="aiResults" class="ai-results hidden"></div>
+      </div>
+
       <div class="category-bar" id="categoryBar"></div>
       <div id="troubleshootingList" class="list"></div>
       <p id="noResults" class="empty hidden">No matching guides found.</p>
